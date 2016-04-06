@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if session.logged_in %}
+<form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
+    <dl>
+        <dt>ID:</dt>
+        <dd><input type="text" size="30" name="participant_id"></dd>
+<!--        <dt>Text:
+        <dd><textarea name="text" rows="5" cols="40"></textarea> -->
+    </dl>
+
+    {% for day in range(7) %}
+    <dl>
+        <dt>Day {{ day + 1 }} Date:</dt>
+        <dd><input type="text" size="30" id="day{{ day + 1 }}" name="day{{ day + 1 }}"></dd>
+    </dl>
+    <table class="table table-header-rotated">
+        <thead>
+            <th class="no_rotate"><div><span>Time</span></div></th>
+    {%     for heading in headings %}
+            <th class="rotate"><div><span>{{ heading }}</span></div></th>
+    {%     endfor %}
+        </tr>
+        </thead>
+        <tbody>
+    {%     for time in times %}
+        <tr>
+            <td>{{ time }}</td>
+    {%         for heading in headings %}
+                <td><input type="checkbox" name="{{ (day + 1) ~ time }}" value="{{ heading }}"/></td>
+    {%         endfor %}
+        </tr>
+    {%     endfor %}
+        </tbody>
+    </table>
+    <p />
+    {% endfor %}
+    <dl>
+        <dd><input type="submit" value="Save">
+    </dl>
+</form>
+{% endif %}
+{% endblock %}

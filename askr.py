@@ -19,9 +19,7 @@ app.config.update(dict(
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
-
 app.config['DEBUG'] = True
-
 
 times = ["Before 10am", "10am-2pm", "After 2pm"]
 check_headings = ["Inside", "Car/Bus/etc", "Sun", "Shade", "Hat", "Sunscreen", "Sunglasses", "Dress", "Short Sleeve",
@@ -149,19 +147,98 @@ def road_to_health():
               ('Weight at Measles 1 (cm)', 'm1_weight', 'INTEGER', ''),
               ('Height at Measles 1 (cm)', 'm1_height', 'INTEGER', '')]
 
+    return generate_page(fields, "road_to_health", "road_to_health", "Road To Health")
+
+
+@app.route('/questionnaire', methods=['GET', 'POST'])
+def questionnaire():
+    allowed = [777, 888, 999]
+
+    fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
+              ('q01', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q02', '', 'INTEGER', allowed + range(0, 5 + 1)),
+              ('q02Other', '', 'STRING', ''),
+              ('q03', '', 'INTEGER', allowed + range(0, 5 + 1)),
+              ('q04years', '', 'INTEGER', ''),
+              ('q04months', '', 'INTEGER', ''),
+              ('q05', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q06', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q07', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q08', '', 'INTEGER', allowed + range(0, 6 + 1)),
+              ('q09', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q10', '', 'INTEGER', allowed + range(0, 4 + 1)),
+              ('q11weight', '', 'INTEGER', ''),
+              ('q11height', '', 'INTEGER', ''),
+              ('q12', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q12med_1', '', 'STRING', ''),
+              ('q12med_1_times', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q12med_2', '', 'STRING', ''),
+              ('q12med_2_times', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q12med_3', '', 'STRING', ''),
+              ('q12med_3_times', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q13', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q14', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q15', '', 'INTEGER', allowed + range(0, 2 + 1)),
+              ('q16', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q17', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q18', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q19', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q20', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q21', '', 'INTEGER', allowed + range(0, 6 + 1)),
+              ('q21other', '', 'STRING', ''),
+              ('q22', '', 'INTEGER', allowed + range(0, 4 + 1)),
+              ('q23', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q24', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q25', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q26', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q27', '', 'INTEGER', allowed + range(0, 5 + 1)),
+              ('q28_a', '', 'INTEGER', allowed + [0, 1]),
+              ('q28_b', '', 'INTEGER', allowed + [0, 1]),
+              ('q28_c', '', 'INTEGER', allowed + [0, 1]),
+              ('q28_d', '', 'INTEGER', allowed + [0, 1]),
+              ('q28_e', '', 'INTEGER', allowed + [0, 1]),
+              ('q29_a', '', 'INTEGER', allowed + [0, 1]),
+              ('q29_b', '', 'INTEGER', allowed + [0, 1]),
+              ('q29_c', '', 'INTEGER', allowed + [0, 1]),
+              ('q29_d', '', 'INTEGER', allowed + [0, 1]),
+              ('q29_e', '', 'INTEGER', allowed + [0, 1]),
+              ('q29_f', '', 'INTEGER', allowed + [0, 1]),
+              ('q30', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q31', '', 'INTEGER', allowed + range(0, 6 + 1)),
+              ('q32', '', 'INTEGER', allowed + range(0, 4 + 1)),
+              ('q33', '', 'INTEGER', allowed + range(0, 3 + 1)),
+              ('q34_a', '', 'INTEGER', allowed + [0, 1]),
+              ('q34_b', '', 'INTEGER', allowed + [0, 1]),
+              ('q34_c', '', 'INTEGER', allowed + [0, 1]),
+              ('q34_d', '', 'INTEGER', allowed + [0, 1]),
+              ('q34_e', '', 'INTEGER', allowed + [0, 1]),
+              ('q35_a', '', 'INTEGER', allowed + [0, 1]),
+              ('q35_b', '', 'INTEGER', allowed + [0, 1]),
+              ('q35_c', '', 'INTEGER', allowed + [0, 1]),
+              ('q35_d', '', 'INTEGER', allowed + [0, 1]),
+              ('q35_e', '', 'INTEGER', allowed + [0, 1]),
+              ('q35_f', '', 'INTEGER', allowed + [0, 1]),
+              ('q36', '', 'INTEGER', allowed + range(0, 2 + 1))]
+
+    return generate_page(fields, "questionnaire", "questionnaire", "Questionnaire")
+
+
+def generate_page(fields, page_name, add_method, title):
     field_names = []
+    params = []
 
     for field in fields:
         if field[2] == 'INTEGER':
-            BaseForm.append_field(field[1], IntegerField(field[0], [LegalValues(field[3])]))
+            BaseForm.append_field(field[0] if field[1] == '' else field[1], IntegerField(field[0], [LegalValues(field[3])]))
         elif field[2] == 'DATE':
-            BaseForm.append_field(field[1], DateField(field[0], format=field[3]))
+            BaseForm.append_field(field[0] if field[1] == '' else field[1], DateField(field[0], format=field[3]))
         elif field[2] == 'TEXT':
-            BaseForm.append_field(field[1], TextAreaField(field[0]))
+            BaseForm.append_field(field[0] if field[1] == '' else field[1], TextAreaField(field[0]))
         elif field[2] == 'STRING':
-            BaseForm.append_field(field[1], StringField(field[0]))
+            BaseForm.append_field(field[0] if field[1] == '' else field[1], StringField(field[0]))
 
-        field_names.append(field[1])
+        field_names.append(field[0] if field[1] == '' else field[1])
+        params.append('?')
 
     rth_form = BaseForm(request.form)
 
@@ -178,25 +255,27 @@ def road_to_health():
         #     if rth_form[field_name].errors:
         #         for error in rth_form[field_name].errors:
         #             print error
-        return render_template('_render_template.html', title='Road to Health', add_method='road_to_health',
+        return render_template('_render_template.html', title=title, add_method=add_method,
                                fields=field_names, form=rth_form)
 
     print "validated "
     ins = ','.join(field_names)
+    into = ','.join(params)
 
     values = [request.form[field_name] for field_name in field_names]
 
     print values
 
     db = get_db()
-    db.execute("insert into road_to_health (" + ins + ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    db.execute("insert into " + add_method + " (" + ins + ") values (" + into + ")",
                values)
     db.commit()
 
     for field_name in field_names:
         print request.form[field_name]
 
-    return redirect(url_for('road_to_health'))
+    return redirect(url_for(page_name))
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1')

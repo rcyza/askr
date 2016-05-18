@@ -1,0 +1,8 @@
+# OS files
+[Tt]humbs.db
+
+# Python files
+*.pyc
+
+# Project files
+*.db

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
+import const
 from sqlite3 import dbapi2 as sqlite3
 from flask_wtf import Form
 from flask import Flask, request, g, redirect, url_for, render_template, flash
-from wtforms import StringField, IntegerField, DateField, TextAreaField
+from wtforms import StringField, IntegerField, DateField, TextAreaField, DecimalField
 from wtforms.validators import ValidationError
 
 app = Flask(__name__)
@@ -56,15 +57,21 @@ def connect_db():
     return rv
 
 
+@app.before_first_request
+def check_db():
+    """tries to find a sqlite db"""
+    if not os.path.isfile(app.config['DATABASE']):
+        init_db()
+
+
 def init_db():
     """Initializes the database."""
     db = get_db()
-    with app.open_resource('schema.sql', mode='r') as f:
+    with app.open_resource('vaccine_study_create.sql', mode='r') as f:
         db.cursor().executescript(f.read())
     db.commit()
 
 
-@app.cli.command('initdb')
 def initdb_command():
     """Creates the database tables."""
     init_db()
@@ -133,18 +140,18 @@ def road_to_health():
 
     fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
               ('Date of birth', 'dob', 'DATE', '%d/%m/%Y'),
-              ('Birth weight (g)', 'bweight', 'INTEGER', ''),
+              ('Birth weight (kg)', 'bweight', 'NUMERIC', 3),
               ('Birth length (cm)', 'blength', 'INTEGER', ''),
               ('Birth head circumference (cm)', 'bheadc', 'INTEGER', ''),
               ('Problems during pregnancy/ birth/ neonatally', 'problems', 'TEXT', ''),
-              ('APGAR 1 Minute', 'apgar1', 'INTEGER', allowed + range(0, 11)),
-              ('APGAR 5 Minutes', 'apgar5', 'INTEGER', allowed + range(0, 11)),
+              ('APGAR 1 Minute (/10)', 'apgar1', 'INTEGER', allowed + range(0, 11)),
+              ('APGAR 5 Minutes (/10)', 'apgar5', 'INTEGER', allowed + range(0, 11)),
               ('Gestational age', 'gest_age', 'INTEGER', ''),
               ('Received other immunisations prior', 'other_imm', 'INTEGER', allowed + [0, 1]),
               ('Received measles 1', 'measles1', 'INTEGER', allowed + [0, 1]),
               ('Date Measles 1 Received', 'm1_date', 'DATE', '%d/%m/%Y'),
               ('Batch number of measles 1', 'm1_batch_no', 'STRING', ''),
-              ('Weight at Measles 1 (cm)', 'm1_weight', 'INTEGER', ''),
+              ('Weight at Measles 1 (kg)', 'm1_weight', 'NUMERIC', 3),
               ('Height at Measles 1 (cm)', 'm1_height', 'INTEGER', '')]
 
     return generate_page(fields, "road_to_health", "road_to_health", "Road To Health")
@@ -228,16 +235,29 @@ def generate_page(fields, page_name, add_method, title):
     params = []
 
     for field in fields:
-        if field[2] == 'INTEGER':
-            BaseForm.append_field(field[0] if field[1] == '' else field[1], IntegerField(field[0], [LegalValues(field[3])]))
-        elif field[2] == 'DATE':
-            BaseForm.append_field(field[0] if field[1] == '' else field[1], DateField(field[0], format=field[3]))
-        elif field[2] == 'TEXT':
-            BaseForm.append_field(field[0] if field[1] == '' else field[1], TextAreaField(field[0]))
-        elif field[2] == 'STRING':
-            BaseForm.append_field(field[0] if field[1] == '' else field[1], StringField(field[0]))
+        if field[const.VARIABLE_TYPE] == 'INTEGER':
+            BaseForm.append_field(
+                field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                IntegerField(field[const.DISPLAY_NAME], [LegalValues(field[const.ALLOWED_VALUES])]))
+        elif field[const.VARIABLE_TYPE] == 'DATE':
+            BaseForm.append_field(
+                field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                DateField(field[const.DISPLAY_NAME], format=field[const.ALLOWED_VALUES]))
+        elif field[const.VARIABLE_TYPE] == 'TEXT':
+            BaseForm.append_field(
+                field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                TextAreaField(field[const.DISPLAY_NAME]))
+        elif field[const.VARIABLE_TYPE] == 'STRING':
+            BaseForm.append_field(
+                field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                StringField(field[const.DISPLAY_NAME]))
+        elif field[const.VARIABLE_TYPE] == 'NUMERIC':
+            BaseForm.append_field(
+                field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                DecimalField(field[const.DISPLAY_NAME], places=field[const.ALLOWED_VALUES]))
 
-        field_names.append(field[0] if field[1] == '' else field[1])
+        field_names.append(
+            field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME])
         params.append('?')
 
     rth_form = BaseForm(request.form)

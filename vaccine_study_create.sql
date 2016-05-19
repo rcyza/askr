@@ -77,7 +77,7 @@ CREATE TABLE `questionnaire` (
     `q08`               INTEGER,  -- 6
     `q09`               INTEGER,  -- 2
     `q10`               INTEGER,  -- 4
-    `q11weight`         DECIMAL,
+    `q11weight`         NUMERIC,
     `q11height`         INTEGER,
     `q12`               INTEGER,  -- 2
     `q12med_1`          TEXT,  -- 2

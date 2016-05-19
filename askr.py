@@ -174,7 +174,7 @@ def questionnaire():
               ('q08', '', 'INTEGER', allowed + range(0, 6 + 1)),
               ('q09', '', 'INTEGER', allowed + range(0, 2 + 1)),
               ('q10', '', 'INTEGER', allowed + range(0, 4 + 1)),
-              ('q11weight', '', 'INTEGER', ''),
+              ('q11weight', '', 'DECIMAL', 3),
               ('q11height', '', 'INTEGER', ''),
               ('q12', '', 'INTEGER', allowed + range(0, 2 + 1)),
               ('q12med_1', '', 'STRING', ''),

@@ -5,7 +5,7 @@ import const
 from sqlite3 import dbapi2 as sqlite3
 from flask_wtf import Form
 from flask import Flask, request, g, redirect, url_for, render_template, flash
-from wtforms import StringField, IntegerField, DateField, TextAreaField, DecimalField
+from wtforms import StringField, IntegerField, DateField, TextAreaField, DecimalField, SelectField
 from wtforms.validators import ValidationError
 
 app = Flask(__name__)
@@ -137,6 +137,7 @@ def add_entry():
 @app.route('/road_to_health', methods=['GET', 'POST'])
 def road_to_health():
     allowed = [777, 888, 999]
+    yes_no = ((0, "0 - No"), (1, "1 - Yes"), (777, "777 - Not Entered "), (888, "888 - Not Applicable "), (999, "999 - Missing "))
 
     fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
               ('Date of birth', 'dob', 'DATE', '%d/%m/%Y'),
@@ -147,8 +148,8 @@ def road_to_health():
               ('APGAR 1 Minute (/10)', 'apgar1', 'INTEGER', allowed + range(0, 11)),
               ('APGAR 5 Minutes (/10)', 'apgar5', 'INTEGER', allowed + range(0, 11)),
               ('Gestational age', 'gest_age', 'INTEGER', ''),
-              ('Received other immunisations prior', 'other_imm', 'INTEGER', allowed + [0, 1]),
-              ('Received measles 1', 'measles1', 'INTEGER', allowed + [0, 1]),
+              ('Received other immunisations prior', 'other_imm', 'SELECT', yes_no),
+              ('Received measles 1', 'measles1', 'SELECT', yes_no),
               ('Date Measles 1 Received', 'm1_date', 'DATE', '%d/%m/%Y'),
               ('Batch number of measles 1', 'm1_batch_no', 'STRING', ''),
               ('Weight at Measles 1 (kg)', 'm1_weight', 'NUMERIC', 3),
@@ -239,6 +240,10 @@ def generate_page(fields, page_name, add_method, title):
             BaseForm.append_field(
                 field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
                 IntegerField(field[const.DISPLAY_NAME], [LegalValues(field[const.ALLOWED_VALUES])]))
+        elif field[const.VARIABLE_TYPE] == 'SELECT':
+            BaseForm.append_field(
+                field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                SelectField(field[const.DISPLAY_NAME], choices=field[const.ALLOWED_VALUES], default=777, coerce=int))
         elif field[const.VARIABLE_TYPE] == 'DATE':
             BaseForm.append_field(
                 field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],

@@ -140,7 +140,7 @@ def road_to_health():
     yes_no = ((0, "0 - Yes"), (1, "1 - No"), (777, "777 - Not Entered "), (888, "888 - Not Applicable "), (999, "999 - Missing "))
 
     fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
-              ('Date of birth', 'dob', 'DATE', '%d/%m/%Y'),
+              ('Date of birth', 'dob', 'DATE', '%d%b%Y'),
               ('Birth weight (kg)', 'bweight', 'NUMERIC', 3),
               ('Birth length (cm)', 'blength', 'NUMERIC', 3),
               ('Birth head circumference (cm)', 'bheadc', 'NUMERIC', 3),
@@ -150,7 +150,7 @@ def road_to_health():
               ('Gestational age', 'gest_age', 'INTEGER', ''),
               ('Received other immunisations prior', 'other_imm', 'SELECT', yes_no),
               ('Received measles 1', 'measles1', 'SELECT', yes_no),
-              ('Date Measles 1 Received', 'm1_date', 'DATE', '%d/%m/%Y'),
+              ('Date Measles 1 Received', 'm1_date', 'DATE', '%d%b%Y'),
               ('Batch number of measles 1', 'm1_batch_no', 'STRING', ''),
               ('Weight at Measles 1 (kg)', 'm1_weight', 'NUMERIC', 3),
               ('Height at Measles 1 (cm)', 'm1_height', 'NUMERIC', 3)]

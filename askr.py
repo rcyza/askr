@@ -137,7 +137,7 @@ def add_entry():
 @app.route('/road_to_health', methods=['GET', 'POST'])
 def road_to_health():
     allowed = [777, 888, 999]
-    yes_no = ((0, "0 - No"), (1, "1 - Yes"), (777, "777 - Not Entered "), (888, "888 - Not Applicable "), (999, "999 - Missing "))
+    yes_no = ((0, "0 - Yes"), (1, "1 - No"), (777, "777 - Not Entered "), (888, "888 - Not Applicable "), (999, "999 - Missing "))
 
     fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
               ('Date of birth', 'dob', 'DATE', '%d/%m/%Y'),

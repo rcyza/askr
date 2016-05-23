@@ -1,0 +1,11 @@
+Need to prevent duplicate IDs. 
+- create participant page
+- link other tables to it
+
+Page to indicate data for each participant
+
+Sort out questionnaire and all the other forms
+
+Focused field should highlight corresponding label.
+- to assist with capturing data not in researcher's language
+

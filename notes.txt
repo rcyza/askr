@@ -9,3 +9,6 @@ Sort out questionnaire and all the other forms
 Focused field should highlight corresponding label.
 - to assist with capturing data not in researcher's language
 
+
+Openended questions which are entered in other languages to be shown on a translation page. 
+

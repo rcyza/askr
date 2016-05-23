@@ -12,3 +12,12 @@ Focused field should highlight corresponding label.
 
 Openended questions which are entered in other languages to be shown on a translation page. Possibly using TEXT answer type.  
 
+- ID integrity 
+- Date format : currently dd/mm/yyyy is the perfect format but if it auto corrected from ddmmyyyy that would be great or the slashes are just there
+- skipping to the next line using tab, can we use enter and have the save button as part of the sequence so when you get to the end it goes onto and you enter enter again it save and takes you to the next record 
+- possible to add a flagging system: ie the data enterer flag a response to a particular variable, so in the db it could show up that record 1003 has a flag and then i can go look and see they flagged apgar left it blank and then in a note connected to the flag wrote why (in this case it was a home delivery)
+
+DONE:
+- coding for yes no yes = 0 no = 1
+- birth head circ, length and height at measles 1 should all be decimal
+- each field storing a memory of what has been entered is feck annoying - please remove 

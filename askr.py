@@ -142,8 +142,8 @@ def road_to_health():
     fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
               ('Date of birth', 'dob', 'DATE', '%d/%m/%Y'),
               ('Birth weight (kg)', 'bweight', 'NUMERIC', 3),
-              ('Birth length (cm)', 'blength', 'INTEGER', ''),
-              ('Birth head circumference (cm)', 'bheadc', 'INTEGER', ''),
+              ('Birth length (cm)', 'blength', 'NUMERIC', 3),
+              ('Birth head circumference (cm)', 'bheadc', 'NUMERIC', 3),
               ('Problems during pregnancy/ birth/ neonatally', 'problems', 'TEXT', ''),
               ('APGAR 1 Minute (/10)', 'apgar1', 'INTEGER', allowed + range(0, 11)),
               ('APGAR 5 Minutes (/10)', 'apgar5', 'INTEGER', allowed + range(0, 11)),
@@ -153,7 +153,7 @@ def road_to_health():
               ('Date Measles 1 Received', 'm1_date', 'DATE', '%d/%m/%Y'),
               ('Batch number of measles 1', 'm1_batch_no', 'STRING', ''),
               ('Weight at Measles 1 (kg)', 'm1_weight', 'NUMERIC', 3),
-              ('Height at Measles 1 (cm)', 'm1_height', 'INTEGER', '')]
+              ('Height at Measles 1 (cm)', 'm1_height', 'NUMERIC', 3)]
 
     return generate_page(fields, "road_to_health", "road_to_health", "Road To Health")
 

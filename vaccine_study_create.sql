@@ -24,8 +24,8 @@ CREATE TABLE `road_to_health` (
     `participant_id`	INTEGER references participant(id),
     `dob`  TEXT,
     `bweight` NUMERIC,
-    `blength` INTEGER,
-    `bheadc` INTEGER,
+    `blength` NUMERIC,
+    `bheadc` NUMERIC,
     `problems` TEXT,
     `apgar1` INTEGER,
     `apgar5` INTEGER, 
@@ -35,7 +35,7 @@ CREATE TABLE `road_to_health` (
     `m1_date` TEXT,
     `m1_batch_no` TEXT,
     `m1_weight` NUMERIC,
-    `m1_height` INTEGER
+    `m1_height` NUMERIC
 );
 
 CREATE INDEX rth_participant_index ON road_to_health(participant_id);

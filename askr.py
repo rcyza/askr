@@ -2,7 +2,8 @@
 
 import os
 import const
-from sqlite3 import dbapi2 as sqlite3
+import sqlite3
+
 from flask_wtf import Form
 from flask import Flask, request, g, redirect, url_for, render_template, flash
 from wtforms import StringField, IntegerField, DateField, TextAreaField, DecimalField, SelectField
@@ -41,6 +42,26 @@ class LegalValues(object):
         if self.values:
             if val not in self.values:
                 raise ValidationError(self.message)
+
+
+class UniqueValues(object):
+    """ validator that checks field uniqueness """
+    def __init__(self, model, field, message=None):
+        self.model = model
+        self.field = field
+        if not message:
+            message = u'this element already exists'
+        self.message = message
+
+    def __call__(self, form, field):
+
+        db = get_db()
+        check = db.cursor().execute("select count(*) from " + self.model + " where " + self.field + "=? ",
+                                    [field.data]).fetchone()[0]
+        print ("after db.execute check=", check)
+
+        if check != 0:
+            raise ValidationError(self.message)
 
 
 class BaseForm(Form):
@@ -141,7 +162,7 @@ def road_to_health():
         (0, "0 - Yes"), (1, "1 - No"), (777, "777 - Default Value "), (888, "888 - Not Applicable "),
         (999, "999 - Missing "))
 
-    fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
+    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
               ('Date of birth', 'dob', 'DATE', '%d%b%Y'),
               ('Birth weight (kg)', 'bweight', 'NUMERIC', 3),
               ('Birth length (cm)', 'blength', 'NUMERIC', 3),
@@ -170,7 +191,7 @@ def questionnaire():
 
     yes_no_dont_know = allowed + [(1, "1 - No"), (2, "2 - Yes"), (3, "3 - Don't know")]
 
-    fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
+    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
               ('Relation to child', 'q01', 'SELECT', allowed + [(1, "1 - Mother"),
                                                                 (2, "2 - Guardian"),
                                                                 (3, "3 - Family Relation")]),
@@ -295,9 +316,14 @@ def generate_page(fields, page_name, add_method, title):
 
     for field in fields:
         if field[const.VARIABLE_TYPE] == 'INTEGER':
-            BaseForm.append_field(
-                field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
-                IntegerField(field[const.DISPLAY_NAME], [LegalValues(field[const.ALLOWED_VALUES])]))
+            if field[const.ALLOWED_VALUES] == 'UNIQUE':
+                BaseForm.append_field(
+                    field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                    IntegerField(field[const.DISPLAY_NAME], [UniqueValues(add_method, field[const.VARIABLE_NAME])]))
+            else:
+                BaseForm.append_field(
+                    field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                    IntegerField(field[const.DISPLAY_NAME], [LegalValues(field[const.ALLOWED_VALUES])]))
         elif field[const.VARIABLE_TYPE] == 'SELECT':
             BaseForm.append_field(
                 field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
@@ -374,4 +400,4 @@ def generate_page(fields, page_name, add_method, title):
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1')
+    app.run(host='127.0.0.1', debug=True, use_debugger=False, use_reloader=False)

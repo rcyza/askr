@@ -137,7 +137,9 @@ def add_entry():
 @app.route('/road_to_health', methods=['GET', 'POST'])
 def road_to_health():
     allowed = [777, 888, 999]
-    yes_no = ((0, "0 - Yes"), (1, "1 - No"), (777, "777 - Not Entered "), (888, "888 - Not Applicable "), (999, "999 - Missing "))
+    yes_no = (
+        (0, "0 - Yes"), (1, "1 - No"), (777, "777 - Not Entered "), (888, "888 - Not Applicable "),
+        (999, "999 - Missing "))
 
     fields = [('Participant ID', 'participant_id', 'INTEGER', ''),
               ('Date of birth', 'dob', 'DATE', '%d%b%Y'),
@@ -233,6 +235,8 @@ def questionnaire():
 
 def generate_page(fields, page_name, add_method, title):
     field_names = []
+    flag_fields = []
+    data_fields = []
     params = []
 
     for field in fields:
@@ -261,8 +265,19 @@ def generate_page(fields, page_name, add_method, title):
                 field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
                 DecimalField(field[const.DISPLAY_NAME], places=field[const.ALLOWED_VALUES]))
 
+        flag_name = "flag_" + field[const.VARIABLE_NAME]
+
+        BaseForm.append_field(
+            flag_name, StringField(flag_name)
+        )
+
         field_names.append(
+            (field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+             flag_name))
+
+        data_fields.append(
             field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME])
+        flag_fields.append(flag_name)
         params.append('?')
 
     rth_form = BaseForm(request.form)
@@ -284,20 +299,22 @@ def generate_page(fields, page_name, add_method, title):
                                fields=field_names, form=rth_form)
 
     print "validated "
-    ins = ','.join(field_names)
+    ins = ','.join(data_fields)
     into = ','.join(params)
 
-    values = [request.form[field_name] for field_name in field_names]
-
-    print values
+    values = [request.form[field_name] for field_name in data_fields]
 
     db = get_db()
     db.execute("insert into " + add_method + " (" + ins + ") values (" + into + ")",
                values)
-    db.commit()
 
-    for field_name in field_names:
-        print request.form[field_name]
+    for flag_field in flag_fields:
+        if not request.form[flag_field] == '':
+            db.execute("insert into flagged_records (participant_id, variable_name, table_name, flag_text) values (" +
+                       "?, ?, ?, ? )",
+                       [request.form["participant_id"], flag_field[5:], add_method, request.form[flag_field]])
+
+    db.commit()
 
     return redirect(url_for(page_name))
 

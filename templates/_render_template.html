@@ -5,7 +5,7 @@
   {{ form.csrf_token }}
   <dl class="inline">
 {%     for field_name in fields %}
-{{         render_field(form[field_name], autocomplete="off")  }}
+{{         render_field(form[field_name[0]], form[field_name[1]], autocomplete="off")  }}
 {%     endfor %}
   </dl>
   <p><input type=submit value=Save>

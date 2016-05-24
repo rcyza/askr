@@ -1,12 +1,18 @@
-{% macro render_field(field) %}
-  <dt>{{ field.label }}
-  <dd>{{ field(**kwargs)|safe }}
-  {% if field.errors %}
-    <ul class=errors>
-    {% for error in field.errors %}
-      <li>{{ error }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-  </dd>
+{% macro render_field(field, flag) %}
+<div>
+    <dt>{{ field.label }}
+    <dd>{{ field(**kwargs)|safe }}
+
+    <img src=" {{ url_for('static', filename='flag_icon.png') }}" class="flagToggle"
+        id="{{ 'toggle_' ~ flag.name }}"/>
+    {{ flag(class_="flagField" )|safe }}
+    {% if field.errors %}
+        <ul class=errors>
+        {% for error in field.errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    </dd>
+</div>
 {% endmacro %}

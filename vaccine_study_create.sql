@@ -132,3 +132,11 @@ CREATE TABLE `questionnaire` (
 );
 
 CREATE INDEX questionnaire_participant_index ON questionnaire(participant_id);
+
+CREATE TABLE `flagged_records` (
+    `flag_id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `participant_id` INTEGER,
+    `variable_name` TEXT,
+    `table_name` TEXT,
+    `flag_text` TEXT
+);

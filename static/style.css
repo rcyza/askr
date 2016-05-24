@@ -73,3 +73,13 @@ dl.inline dd    { display: inline;  margin: 0; }
 dl.inline dd:after{ display: block; content: ''; }
 dl.inline dt    { display: inline-block; min-width: 320px; }
 ul.errors, .errors li {display: inline; color: red; }
+div.curFocus    { background: #fdecb2; }
+img.flagToggle  { width: 1em; vertical-align: middle; }
+dd textarea     { vertical-align: middle; }
+input, select, textarea {
+                 width: 14em;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+input.flagField {display: none; }

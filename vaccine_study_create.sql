@@ -63,7 +63,7 @@ CREATE TABLE `sun_diary` (
 CREATE INDEX sun_diary_participant_index ON sun_diary(participant_id);
 
 CREATE TABLE `questionnaire` (
-    `record_id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `record_id`         INTEGER PRIMARY KEY AUTOINCREMENT,
     `participant_id`	INTEGER references participant(id),
     `q01`               INTEGER,  -- 3
     `q02`               INTEGER,  -- 5
@@ -133,6 +133,42 @@ CREATE TABLE `questionnaire` (
 
 CREATE INDEX questionnaire_participant_index ON questionnaire(participant_id);
 
+CREATE TABLE `telephonic_followup` (
+	`record_id`	        INTEGER PRIMARY KEY AUTOINCREMENT,
+	`participant_id`	INTEGER references participant(id),
+	`q1likedprotection`	INTEGER,
+	`q1ci`	            INTEGER,
+	`q1cii`	            INTEGER,
+	`q1ciii`	        INTEGER,
+	`q1civ`	            INTEGER,
+	`q1cv`	            TEXT,
+	`q2easytouse`	    INTEGER,
+	`q3childlikedprotection`	INTEGER,
+	`q3ci`	            INTEGER,
+	`q3cii`	            INTEGER,
+	`q3ciii`	        INTEGER,
+	`q3civ`	            INTEGER,
+	`furthercomments`	TEXT
+);
+
+CREATE INDEX telefollowup_participant_index ON questionnaire(participant_id);
+
+CREATE TABLE `observations` (
+	`record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`date`	TEXT,
+	`obs_time`	INTEGER,
+	`weather`	INTEGER,
+	`temperature`	INTEGER,
+	`clinic`	TEXT,
+	`parents_waiting`	INTEGER,
+	`shading`	INTEGER,
+	`percent_shaded`	INTEGER,
+	`parents_shaded`	INTEGER,
+	`percentage_parents_shaded`	INTEGER,
+	`waiting_direct_sun`	INTEGER,
+	`waiting_inside`	INTEGER
+);
+
 CREATE TABLE `flagged_records` (
     `flag_id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `participant_id` INTEGER,
@@ -140,3 +176,4 @@ CREATE TABLE `flagged_records` (
     `table_name` TEXT,
     `flag_text` TEXT
 );
+

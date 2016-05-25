@@ -3,7 +3,6 @@
 import os
 import const
 import sqlite3
-
 from flask_wtf import Form
 from flask import Flask, request, g, redirect, url_for, render_template, flash
 from wtforms import StringField, IntegerField, DateField, TextAreaField, DecimalField, SelectField
@@ -46,6 +45,7 @@ class LegalValues(object):
 
 class UniqueValues(object):
     """ validator that checks field uniqueness """
+
     def __init__(self, model, field, message=None):
         self.model = model
         self.field = field
@@ -58,7 +58,6 @@ class UniqueValues(object):
         db = get_db()
         check = db.cursor().execute("select count(*) from " + self.model + " where " + self.field + "=? ",
                                     [field.data]).fetchone()[0]
-        print ("after db.execute check=", check)
 
         if check != 0:
             raise ValidationError(self.message)
@@ -181,6 +180,32 @@ def road_to_health():
     return generate_page(fields, "road_to_health", "road_to_health", "Road To Health")
 
 
+@app.route('/enrolment_checklist', methods=['GET', 'POST'])
+def enrolment_checklist():
+    yes_no = (
+        (0, "0 - Yes"), (1, "1 - No"), (777, "777 - Default Value "), (888, "888 - Not Applicable "),
+        (999, "999 - Missing "))
+
+    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
+              # 1. Child is here to receive second measles vaccine?
+              ('Here for second measles vaccine', 'to_receive_second_vax', 'SELECT', yes_no),
+              # 2. Child received first measles vaccine?
+              ('Child received first vaccine', 'received_first_vax', 'SELECT', yes_no),
+              # 3. Mother is able to sign consent (>/= 18years old)?
+              ('Mother can consent', 'mother_can_consent', 'SELECT', yes_no),
+              # 4. Mother has child’s road to health chart?
+              ('Has road to health chart', 'has_road_to_health_chart', 'SELECT', yes_no),
+              # 5. Mother confirms they will be available for duration of study?
+              ('Mother available for duration of study', 'available_for_study', 'SELECT', yes_no),
+              # 6. Does this person meet ALL the above requirements (i.e. answers is YES to all 5 questions)?
+              ('Meets all requirements', 'meets_requirements', 'SELECT', yes_no),
+              ('Date enrolled', 'date_enrolled', 'DATE', '%d%b%Y'),
+              ('Contact number', 'contact_number', 'STRING', ''),
+              ('Alternate contact number', 'alt_contact_number', 'STRING', '')]
+
+    return generate_page(fields, "enrolment_checklist", "enrolment_checklist", "Enrolment Checklist")
+
+
 @app.route('/questionnaire', methods=['GET', 'POST'])
 def questionnaire():
     allowed_ints = [777, 888, 999]
@@ -285,13 +310,13 @@ def questionnaire():
                                                                       (2, "2 - Mostly Outside")]),
               ('Spends time on weekends', 'q31', 'SELECT', allowed + [(1, "1 - Mostly Inside"),
                                                                       (2, "2 - Mostly Outside")]),
-              ('Location spent outside', 'q32',  'SELECT', allowed + [(1, "1 - Shade"),
-                                                                      (2, "2 - Open/sun")]),
-              ('Hours spent outside', 'q33',  'SELECT', allowed + [(1, "1 - Less than 1 hour"),
-                                                                   (2, "2 - 1 hour"),
-                                                                   (3, "3 - 2 hours"),
-                                                                   (4, "4 - 3 hours"),
-                                                                   (5, "5 - More than 3 hours")]),
+              ('Location spent outside', 'q32', 'SELECT', allowed + [(1, "1 - Shade"),
+                                                                     (2, "2 - Open/sun")]),
+              ('Hours spent outside', 'q33', 'SELECT', allowed + [(1, "1 - Less than 1 hour"),
+                                                                  (2, "2 - 1 hour"),
+                                                                  (3, "3 - 2 hours"),
+                                                                  (4, "4 - 3 hours"),
+                                                                  (5, "5 - More than 3 hours")]),
               ('Hat or cap', 'q34_a', 'SELECT', yes_no),
               ('Sunscreen', 'q34_b', 'SELECT', yes_no),
               ('Long sleeve shirt', 'q34_c', 'SELECT', yes_no),
@@ -308,11 +333,66 @@ def questionnaire():
     return generate_page(fields, "questionnaire", "questionnaire", "Questionnaire")
 
 
+@app.route('/observations', methods=['GET', 'POST'])
+def observations():
+
+    allowed = [(777, "777 - Default Value "), (888, "888 - Not Applicable "), (999, "999 - Missing ")]
+    yes_no = allowed + [(1, "1 - No"), (2, "2 - Yes")]
+
+    fields = [('Date', 'date', 'DATE', '%d%b%Y'),
+              ('Observation time', 'obs_time', 'SELECT', allowed + [(1, "1 - Before 10h00 "),
+                                                                    (2, "2 - 10h00 - 14h00"),
+                                                                    (3, "3 - After 14h00")]),
+              ('Describe weather today', 'weather', 'SELECT', allowed + [(1, '1 - Sunny'),
+                                                                         (2, '2 - Some cloud cover'),
+                                                                         (3, '3 - Completely overcast'),
+                                                                         (4, '4 - Raining')]),
+              ('What is the temperature today?', 'temperature', 'SELECT', allowed + [(1, "1 - Cold"),
+                                                                    (2, "2 - Mild"),
+                                                                    (3, "3 - Hot")]),
+              ('Clinic name', 'clinic', 'STRING', ''),
+              ('People waiting outside', 'parents_waiting', 'SELECT', yes_no),
+              ('Shade awning or trees outside', 'shading', 'SELECT', yes_no),
+              ('Percentage all people in shade (%)', 'percent_shaded', 'INTEGER', ''),
+              ('People standing in shade', 'parents_shaded', 'SELECT', yes_no),
+              ('Percentage parents and children in shade (%)', 'percentage_parents_shaded', 'INTEGER', ''),
+              ('Parents and children waiting in direct sun', 'waiting_direct_sun', 'SELECT', yes_no),
+              ('Parents and children waiting inside clinic', 'waiting_inside', 'SELECT', yes_no)]
+
+    return generate_page(fields, "observations", "observations", "Observations")
+
+
+@app.route('/telephonic_followup', methods=['GET', 'POST'])
+def telephonic_followup():
+
+    allowed = [(777, "777 - Default Value "), (888, "888 - Not Applicable "), (999, "999 - Missing ")]
+    yes_no = allowed + [(1, "1 - Yes"), (2, "2 - No")]
+
+    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
+              ('Liked using sun protection', 'q1likedprotection', 'SELECT', yes_no),
+              ('Didn\'t like: feeling of sunscreen', 'q1ci', 'SELECT', yes_no),
+              ('Didn\'t like: sunscreen would hurt', 'q1cii', 'SELECT', yes_no),
+              ('Didn\'t like: friends or family sentiment', 'q1ciii', 'SELECT', yes_no),
+              ('Didn\'t like: the umbrella', 'q1civ', 'SELECT', yes_no),
+              ('Didn\'t like: other reasons', 'q1cv', 'TEXT', ''),
+              ('Easy to use sun protection?', 'q2easytouse', 'SELECT', yes_no),
+              ('Child liked sun protection?', 'q3childlikedprotection', 'SELECT', yes_no),
+              ('Child didn\'t like: want to wear', 'q3ci', 'SELECT', yes_no),
+              ('Child didn\'t like: hat', 'q3cii', 'SELECT', yes_no),
+              ('Child didn\'t like: sunscreen', 'q3ciii', 'SELECT', yes_no),
+              ('Child didn\'t like: long sleeve top', 'q3civ', 'SELECT', yes_no),
+              ('Further comments', 'furthercomments', 'TEXT', '')]
+
+    return generate_page(fields, "telephonic_followup", "telephonic_followup", "Telephonic Followup")
+
+
 def generate_page(fields, page_name, add_method, title):
     field_names = []
     flag_fields = []
     data_fields = []
     params = []
+
+    print "generating page", page_name
 
     for field in fields:
         if field[const.VARIABLE_TYPE] == 'INTEGER':
@@ -400,4 +480,5 @@ def generate_page(fields, page_name, add_method, title):
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', debug=True, use_debugger=False, use_reloader=False)
+    print "Starting up askr. "
+    app.run(host='127.0.0.1') #, debug=True, use_debugger=False, use_reloader=False)

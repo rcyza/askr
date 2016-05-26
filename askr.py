@@ -26,6 +26,8 @@ times = ["Before 10am", "10am-2pm", "After 2pm"]
 check_headings = ["Inside", "Car/Bus/etc", "Sun", "Shade", "Hat", "Sunscreen", "Sunglasses", "Dress", "Short Sleeve",
                   "Long Sleeve", "Shorts", "Pants", "Costume"]
 
+pages = ["sun_diary", "road_to_health", "enrolment_checklist", "questionnaire", "observations", "telephonic_followup"]
+
 
 class LegalValues(object):
     def __init__(self, values=[], message=None):
@@ -114,7 +116,7 @@ def close_db(error):
         g.sqlite_db.close()
 
 
-@app.route('/sun_diary')
+@app.route('/' + pages[0])
 def sun_diary():
     #    db = get_db()
     #    cur = db.execute('select title, text from entries order by id desc')
@@ -154,7 +156,7 @@ def add_entry():
     return redirect(url_for('sun_diary'))
 
 
-@app.route('/road_to_health', methods=['GET', 'POST'])
+@app.route('/' + pages[1], methods=['GET', 'POST'])
 def road_to_health():
     allowed = [777, 888, 999]
     yes_no = (
@@ -180,7 +182,7 @@ def road_to_health():
     return generate_page(fields, "road_to_health", "road_to_health", "Road To Health")
 
 
-@app.route('/enrolment_checklist', methods=['GET', 'POST'])
+@app.route('/' + pages[2], methods=['GET', 'POST'])
 def enrolment_checklist():
     std_yes_no = (
         (0, "0 - Yes"), (1, "1 - No"), (777, "777 - Default Value "), (888, "888 - Not Applicable "),
@@ -206,7 +208,7 @@ def enrolment_checklist():
     return generate_page(fields, "enrolment_checklist", "enrolment_checklist", "Enrolment Checklist")
 
 
-@app.route('/questionnaire', methods=['GET', 'POST'])
+@app.route('/' + pages[3], methods=['GET', 'POST'])
 def questionnaire():
     allowed_ints = [777, 888, 999]
 
@@ -335,7 +337,7 @@ def questionnaire():
     return generate_page(fields, "questionnaire", "questionnaire", "Questionnaire")
 
 
-@app.route('/observations', methods=['GET', 'POST'])
+@app.route('/' + pages[4], methods=['GET', 'POST'])
 def observations():
     allowed = [(777, "777 - Default Value "), (888, "888 - Not Applicable "), (999, "999 - Missing ")]
     yes_no = [(1, "1 - No"), (2, "2 - Yes")] + allowed
@@ -363,7 +365,7 @@ def observations():
     return generate_page(fields, "observations", "observations", "Observations")
 
 
-@app.route('/telephonic_followup', methods=['GET', 'POST'])
+@app.route('/' + pages[5], methods=['GET', 'POST'])
 def telephonic_followup():
     allowed = [(777, "777 - Default Value "), (888, "888 - Not Applicable "), (999, "999 - Missing ")]
     yes_no = [(1, "1 - Yes"), (2, "2 - No")] + allowed

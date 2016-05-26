@@ -1,20 +1,20 @@
 CREATE TABLE `participant` (
-	`id`	INTEGER UNIQUE,
-	PRIMARY KEY(id)
+    `id`	INTEGER UNIQUE,
+    PRIMARY KEY(id)
 );
 
 CREATE TABLE `enrolment_checklist` (
-	`record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-	`participant_id`	INTEGER references participant(id),
-	`to_receive_second_vax`	INTEGER DEFAULT 0,
-	`received_first_vax`	INTEGER DEFAULT 0,
-	`mother_can_consent`	INTEGER DEFAULT 0,
-	`has_road_to_health_chart`	INTEGER DEFAULT 0,
-	`available_for_study`	INTEGER DEFAULT 0,
-	`meets_requirements`	INTEGER DEFAULT 0,
-	`date_enrolled`	TEXT,
-	`contact_number`	TEXT,
-	`alt_contact_number`	TEXT
+    `record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+    `participant_id`	INTEGER references participant(id),
+    `to_receive_second_vax`	INTEGER DEFAULT 0,
+    `received_first_vax`	INTEGER DEFAULT 0,
+    `mother_can_consent`	INTEGER DEFAULT 0,
+    `has_road_to_health_chart`	INTEGER DEFAULT 0,
+    `available_for_study`	INTEGER DEFAULT 0,
+    `meets_requirements`	INTEGER DEFAULT 0,
+    `date_enrolled`	TEXT,
+    `contact_number`	TEXT,
+    `alt_contact_number`	TEXT
 );
 
 CREATE INDEX enrolment_participant_index ON enrolment_checklist(participant_id);
@@ -41,23 +41,23 @@ CREATE TABLE `road_to_health` (
 CREATE INDEX rth_participant_index ON road_to_health(participant_id);
 
 CREATE TABLE `sun_diary` (
-	`record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-	`participant_ID`	INTEGER references participant(id),
-	`time`	TEXT,
-	`date`	TEXT,
-	`in_building`	INTEGER DEFAULT '0',
-	`in_vehicle`	INTEGER DEFAULT '0',
-	`in_sun`	INTEGER DEFAULT '0',
-	`in_shade`	INTEGER DEFAULT '0',
-	`wore_hat`	INTEGER DEFAULT '0',
-	`wore_sunscreen`	INTEGER DEFAULT '0',
-	`wore_sunglasses`	INTEGER DEFAULT '0',
-	`wore_dress`	INTEGER DEFAULT '0',
-	`wore_shortsleeves`	INTEGER DEFAULT '0',
-	`wore_longsleeves`	INTEGER DEFAULT '0',
-	`wore_shorts`	INTEGER DEFAULT '0',
-	`wore_pants`	INTEGER DEFAULT '0',
-	`wore_costume`	INTEGER DEFAULT '0'
+    `record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+    `participant_ID`	INTEGER references participant(id),
+    `time`	TEXT,
+    `date`	TEXT,
+    `in_building`	INTEGER DEFAULT '0',
+    `in_vehicle`	INTEGER DEFAULT '0',
+    `in_sun`	INTEGER DEFAULT '0',
+    `in_shade`	INTEGER DEFAULT '0',
+    `wore_hat`	INTEGER DEFAULT '0',
+    `wore_sunscreen`	INTEGER DEFAULT '0',
+    `wore_sunglasses`	INTEGER DEFAULT '0',
+    `wore_dress`	INTEGER DEFAULT '0',
+    `wore_shortsleeves`	INTEGER DEFAULT '0',
+    `wore_longsleeves`	INTEGER DEFAULT '0',
+    `wore_shorts`	INTEGER DEFAULT '0',
+    `wore_pants`	INTEGER DEFAULT '0',
+    `wore_costume`	INTEGER DEFAULT '0'
 );
 
 CREATE INDEX sun_diary_participant_index ON sun_diary(participant_id);
@@ -134,39 +134,39 @@ CREATE TABLE `questionnaire` (
 CREATE INDEX questionnaire_participant_index ON questionnaire(participant_id);
 
 CREATE TABLE `telephonic_followup` (
-	`record_id`	        INTEGER PRIMARY KEY AUTOINCREMENT,
-	`participant_id`	INTEGER references participant(id),
-	`q1likedprotection`	INTEGER,
-	`q1ci`	            INTEGER,
-	`q1cii`	            INTEGER,
-	`q1ciii`	        INTEGER,
-	`q1civ`	            INTEGER,
-	`q1cv`	            TEXT,
-	`q2easytouse`	    INTEGER,
-	`q3childlikedprotection`	INTEGER,
-	`q3ci`	            INTEGER,
-	`q3cii`	            INTEGER,
-	`q3ciii`	        INTEGER,
-	`q3civ`	            INTEGER,
-	`furthercomments`	TEXT
+    `record_id`	        INTEGER PRIMARY KEY AUTOINCREMENT,
+    `participant_id`	INTEGER references participant(id),
+    `q1likedprotection`	INTEGER,
+    `q1ci`	            INTEGER,
+    `q1cii`	            INTEGER,
+    `q1ciii`	        INTEGER,
+    `q1civ`	            INTEGER,
+    `q1cv`	            TEXT,
+    `q2easytouse`	    INTEGER,
+    `q3childlikedprotection`	INTEGER,
+    `q3ci`	            INTEGER,
+    `q3cii`	            INTEGER,
+    `q3ciii`	        INTEGER,
+    `q3civ`	            INTEGER,
+    `furthercomments`	TEXT
 );
 
 CREATE INDEX telefollowup_participant_index ON questionnaire(participant_id);
 
 CREATE TABLE `observations` (
-	`record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-	`date`	TEXT,
-	`obs_time`	INTEGER,
-	`weather`	INTEGER,
-	`temperature`	INTEGER,
-	`clinic`	TEXT,
-	`parents_waiting`	INTEGER,
-	`shading`	INTEGER,
-	`percent_shaded`	INTEGER,
-	`parents_shaded`	INTEGER,
-	`percentage_parents_shaded`	INTEGER,
-	`waiting_direct_sun`	INTEGER,
-	`waiting_inside`	INTEGER
+    `record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+    `date`	TEXT,
+    `obs_time`	INTEGER,
+    `weather`	INTEGER,
+    `temperature`	INTEGER,
+    `clinic`	TEXT,
+    `parents_waiting`	INTEGER,
+    `shading`	INTEGER,
+    `percent_shaded`	INTEGER,
+    `parents_shaded`	INTEGER,
+    `percentage_parents_shaded`	INTEGER,
+    `waiting_direct_sun`	INTEGER,
+    `waiting_inside`	INTEGER
 );
 
 CREATE TABLE `flagged_records` (

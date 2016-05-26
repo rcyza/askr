@@ -120,7 +120,7 @@ def sun_diary():
     #    cur = db.execute('select title, text from entries order by id desc')
     #    entries = cur.fetchall()
 
-    return render_template('sun_diary.html', times=times, headings=check_headings)
+    return render_template('sun_diary.html', times=times, headings=check_headings, title="Sun Diary")
 
 
 @app.route('/sun_diary/add', methods=['POST'])

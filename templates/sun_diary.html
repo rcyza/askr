@@ -1,18 +1,19 @@
 {% extends "layout.html" %}
 {% block body %}
-{% if session.logged_in %}
 <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
-    <dl>
-        <dt>ID:</dt>
-        <dd><input type="text" size="30" name="participant_id"></dd>
-<!--        <dt>Text:
-        <dd><textarea name="text" rows="5" cols="40"></textarea> -->
+    <dl class="inline">
+        <div>
+            <dt><label>Participant ID:</label></dt>
+            <dd><input type="text" id="participant_id" name="participant_id"></input></dd>
+        </div>
     </dl>
 
     {% for day in range(7) %}
-    <dl>
-        <dt>Day {{ day + 1 }} Date:</dt>
-        <dd><input type="text" size="30" id="day{{ day + 1 }}" name="day{{ day + 1 }}"></dd>
+    <dl class="inline">
+        <div>
+            <dt class="sun_diary_day_heading"><label>Day {{ day + 1 }} Date:</label></dt>
+            <dd><input type="text" size="30" id="day{{ day + 1 }}" name="day{{ day + 1 }}"></dd>
+        </div>
     </dl>
     <table class="table table-header-rotated">
         <thead>
@@ -39,5 +40,4 @@
         <dd><input type="submit" value="Save">
     </dl>
 </form>
-{% endif %}
 {% endblock %}

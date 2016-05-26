@@ -16,7 +16,6 @@ time, mark, audio, video {
 	border: 0;
 	font-size: 100%;
 	font: inherit;
-	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
@@ -82,4 +81,9 @@ input, select, textarea {
        -moz-box-sizing: border-box;
             box-sizing: border-box;
 }
+input[type="checkbox"] {
+                  width: 1em;
+}
 input.flagField {display: none; }
+
+dt.sun_diary_day_heading { padding-top: 2em; }

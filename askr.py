@@ -369,18 +369,18 @@ def telephonic_followup():
     yes_no = [(1, "1 - Yes"), (2, "2 - No")] + allowed
 
     fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
-              ('Liked using sun protection', 'q1likedprotection', 'SELECT', yes_no),
-              ('Didn\'t like: feeling of sunscreen', 'q1ci', 'SELECT', yes_no),
-              ('Didn\'t like: sunscreen would hurt', 'q1cii', 'SELECT', yes_no),
-              ('Didn\'t like: friends or family sentiment', 'q1ciii', 'SELECT', yes_no),
-              ('Didn\'t like: the umbrella', 'q1civ', 'SELECT', yes_no),
-              ('Didn\'t like: other reasons', 'q1cv', 'TEXT', ''),
-              ('Easy to use sun protection?', 'q2easytouse', 'SELECT', yes_no),
-              ('Child liked sun protection?', 'q3childlikedprotection', 'SELECT', yes_no),
-              ('Child didn\'t like: want to wear', 'q3ci', 'SELECT', yes_no),
-              ('Child didn\'t like: hat', 'q3cii', 'SELECT', yes_no),
-              ('Child didn\'t like: sunscreen', 'q3ciii', 'SELECT', yes_no),
-              ('Child didn\'t like: long sleeve top', 'q3civ', 'SELECT', yes_no),
+              ('1. Liked using sun protection', 'q1likedprotection', 'SELECT', yes_no),
+              ('1ci. Didn\'t like: feeling of sunscreen', 'q1ci', 'SELECT', yes_no),
+              ('1cii. Didn\'t like: sunscreen would hurt', 'q1cii', 'SELECT', yes_no),
+              ('1ciii. Didn\'t like: friends or family sentiment', 'q1ciii', 'SELECT', yes_no),
+              ('1civ. Didn\'t like: the umbrella', 'q1civ', 'SELECT', yes_no),
+              ('1cv. Didn\'t like: other reasons', 'q1cv', 'TEXT', ''),
+              ('2. Easy to use sun protection?', 'q2easytouse', 'SELECT', yes_no),
+              ('3. Child liked sun protection?', 'q3childlikedprotection', 'SELECT', yes_no),
+              ('3ci. Child didn\'t like: want to wear', 'q3ci', 'SELECT', yes_no),
+              ('3cii. Child didn\'t like: hat', 'q3cii', 'SELECT', yes_no),
+              ('3ciii. Child didn\'t like: sunscreen', 'q3ciii', 'SELECT', yes_no),
+              ('3civ. Child didn\'t like: long sleeve top', 'q3civ', 'SELECT', yes_no),
               ('Further comments', 'furthercomments', 'TEXT', '')]
 
     return generate_page(fields, "telephonic_followup", "telephonic_followup", "Telephonic Followup")

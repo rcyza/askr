@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% set active_page = page_name %}
+{% block body %}
+<script>
+$(document).ready( function () {
+    $('#participants').DataTable();
+} );
+</script>
+
+<table id="participants" class="display" data-order='[[ 0, "asc" ]]' data-page-length='25'>
+    <thead>
+        <tr>
+            <th>Participant ID</th>
+    {%     for href, id, caption in navigation_bar %}
+            <th>{{ caption }}</th>
+    {%     endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>3241</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+        </tr>
+        <tr>
+            <td>3141</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+        </tr>
+        <tr>
+            <td>3941</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+            <td>Row 5 Data 1</td>
+            <td>Row 4 Data 2</td>
+        </tr>
+    </tbody>
+</table>
+
+
+{% endblock %}

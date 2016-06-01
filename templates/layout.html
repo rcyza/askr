@@ -5,26 +5,40 @@
   <meta charset="utf-8">
   <title>{{ title }}</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
 
   <script type="text/javascript"
     src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js">
   </script>
+  <script type="text/javascript" charset="utf8"
+    src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js">
+  </script>
   <script type="text/javascript"
     src="{{ url_for('static', filename='enter_tabs.js') }}">
-  </script>
-    <script type="text/javascript"
-    src="{{ url_for('static', filename='flag_input.js') }}">
   </script>
 </head>
 
 <body>
   <div class="page">
-    <h1>{{ title }}</h1>
-    <div class="metanav">
-    </div>
+    <header>
+      <h1>{{ title }}</h1>
+      <div>
+        {% set active_page = active_page|default('index') -%}
+        <ul class="nav">
+        {% for href, id, caption in navigation_bar %}
+          <li>
+            <a {% if id == active_page %} class="active"{% endif %} href="{{ href|e }}">{{ caption|e }}</a>
+          </li>
+        {% endfor %}
+        </ul>
+      </div>
+    </header>
     {% for message in get_flashed_messages() %}
       <div class="flash">{{ message }}</div>
     {% endfor %}
     {% block body %}{% endblock %}
   </div>
 </body>
+
+
+

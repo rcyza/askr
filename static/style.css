@@ -10,64 +10,35 @@ table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-}
+time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 1em; font: inherit; }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-
+footer, header, hgroup, menu, nav, section { display: block; }
+body            { line-height: 1; }
+ol, ul          { list-style: none; }
+blockquote, q   { quotes: none; }
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
+table           { border-collapse: collapse; border-spacing: 0; }
 body            { font-family: sans-serif; background: #eee; }
 a, h1, h2       { color: #377BA8; }
 h1, h2          { font-family: 'Georgia', serif; margin: 0; }
 h1              { border-bottom: 2px solid #eee; }
 h2              { font-size: 1.2em; }
-
-.page           { margin: 2em auto; width: 60em; border: 5px solid #ccc;
-                  padding: 0.8em; background: white; }
+.page           { margin: 2em auto; width: 80em; border: 5px solid #ccc;
+                  padding: 0.8em; background: white; font-size: 0.8em; }
 .entries        { list-style: none; margin: 0; padding: 0; }
 .entries li     { margin: 0.8em 1.2em; }
 .entries li h2  { margin-left: -1em; }
-.add-entry      { font-size: 0.9em; }
 .add-entry dl   { font-weight: bold; }
-.metanav        { text-align: right; font-size: 0.8em; padding: 0.3em;
-                  margin-bottom: 1em; background: #fafafa; }
-.flash          { background: #CEE5F5; padding: 0.5em;
-                  border: 1px solid #AACBE2; }
+.metanav        { text-align: right; padding: 0.3em; margin-bottom: 1em; background: #fafafa; }
+.flash          { background: #CEE5F5; padding: 0.5em; border: 1px solid #AACBE2; }
 .error          { background: #F0D6D6; padding: 0.5em; }
-
 table           { border-collapse: collapse; }
 td              { border: 1px solid #ccc; padding: 5px 10px; }
-
 th.no_rotate    { vertical-align:bottom;text-align:center; }
 th.rotate       { height: 140px; white-space: nowrap; }
 th.rotate > div { transform: translate(25px, 51px) rotate(315deg); width: 30px; text-align: left; }
 th.rotate > div > span { border-bottom: 1px solid #ccc; padding: 5px 10px 5px 0; display: block; width: 100px; }
-
 dl.inline dd    { display: inline;  margin: 0; }
 dl.inline dd:after{ display: block; content: ''; }
 dl.inline dt    { display: inline-block; min-width: 320px; }
@@ -75,15 +46,17 @@ ul.errors, .errors li {display: inline; color: red; }
 div.curFocus    { background: #fdecb2; }
 img.flagToggle  { width: 1em; vertical-align: middle; }
 dd textarea     { vertical-align: middle; }
-input, select, textarea {
-                 width: 14em;
-    -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-            box-sizing: border-box;
-}
-input[type="checkbox"] {
-                  width: 1em;
-}
+input, select, textarea { width: 14em; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+input[type="checkbox"] { width: 1em; }
 input.flagField {display: none; }
-
 dt.sun_diary_day_heading { padding-top: 2em; }
+
+ul.nav          { list-style: none; text-align: center; padding: 0; margin: 0.5em 0; }
+.nav li         { line-height: 1.8em; height: 1.8em; border-bottom: 1px solid #888; background-color: #444; }
+.nav a          { line-height: 1.8em; text-decoration: none; color: #fff; display: block; transition: .3s background-color; }
+.nav a:hover    { background-color: #377BA8; }
+.nav a.active   { background-color: #fff; color: #444; cursor: default; }
+@media screen and (min-width: 80em) {
+    .nav li { width: 10em; border-bottom: none; height 1.8em; line-height: 1.8em; }
+    .nav li { display: inline-block; margin-right: -4px; }
+}

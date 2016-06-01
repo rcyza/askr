@@ -27,6 +27,21 @@ check_headings = ["Inside", "Car/Bus/etc", "Sun", "Shade", "Hat", "Sunscreen", "
                   "Long Sleeve", "Shorts", "Pants", "Costume"]
 
 pages = ["sun_diary", "road_to_health", "enrolment_checklist", "questionnaire", "observations", "telephonic_followup"]
+#  href, id, caption
+navigation_bar = [("", "index", "Home"),
+                  ("participants", "participant", "Participants"),
+                  ("sun_diary", "sun_diary", "Sun Diary"),
+                  ("road_to_health", "road_to_health", "Road to Health"),
+                  ("enrolment_checklist", "enrolment_checklist", "Enrolment Checklist"),
+                  ("questionnaire", "questionnaire", "Questionnaire"),
+                  ("observations", "observations", "Observations"),
+                  ("telephonic_followup", "telephonic_followup", "Telephonic Followup")]
+
+participant_tables = [("sun_diary", "sun_diary", "Sun Diary"),
+                      ("road_to_health", "road_to_health", "Road to Health"),
+                      ("enrolment_checklist", "enrolment_checklist", "Enrolment Checklist"),
+                      ("questionnaire", "questionnaire", "Questionnaire"),
+                      ("telephonic_followup", "telephonic_followup", "Telephonic Followup")]
 
 
 class LegalValues(object):
@@ -116,13 +131,19 @@ def close_db(error):
         g.sqlite_db.close()
 
 
+@app.route('/')
+def askr_main():
+    return render_template('default.html', title="Vaccine Study", navigation_bar=navigation_bar)
+
+
 @app.route('/' + pages[0])
 def sun_diary():
     #    db = get_db()
     #    cur = db.execute('select title, text from entries order by id desc')
     #    entries = cur.fetchall()
 
-    return render_template('sun_diary.html', times=times, headings=check_headings, title="Sun Diary")
+    return render_template('sun_diary.html', times=times, headings=check_headings, title="Sun Diary",
+                           navigation_bar=navigation_bar, page_name="sun_diary")
 
 
 @app.route('/sun_diary/add', methods=['POST'])
@@ -154,6 +175,40 @@ def add_entry():
 
     flash('New entry was successfully posted')
     return redirect(url_for('sun_diary'))
+
+
+@app.route('/' + navigation_bar[1][0])
+def participants():
+    db = get_db()
+
+    id_list = {}
+
+    for href, table_name, title in participant_tables:
+        id_list[table_name] = db.cursor().execute("select participant_ID from " + table_name).fetchall()
+        print table_name, id_list[table_name]
+
+    response_data = {}
+
+    table_map = {"sun_diary": 0,
+                 "road_to_health": 1,
+                 "enrolment_checklist": 2,
+                 "questionnaire": 3,
+                 "telephonic_followup": 4}
+
+    for key, value in id_list.iteritems():
+        for participant_id in id_list[key]:
+            if participant_id[0] not in response_data:
+                response_data[participant_id[0]] = [0, 0, 0, 0, 0]
+
+            cur_resp = response_data[participant_id[0]]
+            cur_resp[table_map[key]] = 1
+            response_data = response_data[participant_id[0]]
+
+    for key, value in response_data.iteritems():
+        print key, value
+
+    return render_template('participants.html', title=navigation_bar[1][2], navigation_bar=navigation_bar,
+                           page_name=navigation_bar[1][1])
 
 
 @app.route('/' + pages[1], methods=['GET', 'POST'])
@@ -457,8 +512,8 @@ def generate_page(fields, page_name, add_method, title):
         #     if rth_form[field_name].errors:
         #         for error in rth_form[field_name].errors:
         #             print error
-        return render_template('_render_template.html', title=title, add_method=add_method,
-                               fields=field_names, form=rth_form)
+        return render_template('_render_template.html', title=title, page_name=page_name, add_method=add_method,
+                               fields=field_names, form=rth_form, navigation_bar=navigation_bar)
 
     print "validated "
     ins = ','.join(data_fields)

@@ -1,6 +1,9 @@
 $( document ).ready(function() {
   console.log( 'ready!' );
-  $( 'form' ).find( 'input,a,select,button,textarea' ).filter( ':visible' )[0].focus();
+  input_items = $( 'form' ).find( 'input,a,select,button,textarea' ).filter( ':visible' );
+  if (input_items.length > 0) {
+    input_items[0].focus();
+  }
 
   $( 'body' ).on('keydown', 'input, select, textarea', function(e) {
     var self = $(this)

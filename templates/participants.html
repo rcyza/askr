@@ -11,45 +11,20 @@ $(document).ready( function () {
     <thead>
         <tr>
             <th>Participant ID</th>
-    {%     for href, id, caption in navigation_bar %}
+    {%     for caption in cols %}
             <th>{{ caption }}</th>
     {%     endfor %}
         </tr>
     </thead>
     <tbody>
+    {%      for participant_id in response_data %}
         <tr>
-            <td>3241</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
+            <td>{{ participant_id }}</td>
+    {%          for value in response_data[participant_id] %}
+            <td>{{ '%s' % 'Complete' if value == 1 else 'Incomplete' }}</td>
+    {%          endfor %}
         </tr>
-        <tr>
-            <td>3141</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
-        </tr>
-        <tr>
-            <td>3941</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
-            <td>Row 5 Data 1</td>
-            <td>Row 4 Data 2</td>
-        </tr>
+    {%     endfor %}
     </tbody>
 </table>
 

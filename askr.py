@@ -195,6 +195,12 @@ def participants():
                  "questionnaire": 3,
                  "telephonic_followup": 4}
 
+    columns = ["Sun Diary",
+               "Road to Health",
+               "Enrolment Checklist",
+               "Questionnaire",
+               "Telephonic Followup"]
+
     for key, value in id_list.iteritems():
         for participant_id in id_list[key]:
             if participant_id[0] not in response_data:
@@ -202,13 +208,10 @@ def participants():
 
             cur_resp = response_data[participant_id[0]]
             cur_resp[table_map[key]] = 1
-            response_data = response_data[participant_id[0]]
-
-    for key, value in response_data.iteritems():
-        print key, value
+            response_data[participant_id[0]] = cur_resp
 
     return render_template('participants.html', title=navigation_bar[1][2], navigation_bar=navigation_bar,
-                           page_name=navigation_bar[1][1])
+                           page_name=navigation_bar[1][1], response_data=response_data, cols=columns)
 
 
 @app.route('/' + pages[1], methods=['GET', 'POST'])

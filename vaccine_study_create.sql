@@ -151,7 +151,43 @@ CREATE TABLE `telephonic_followup` (
     `furthercomments`	TEXT
 );
 
-CREATE INDEX telefollowup_participant_index ON questionnaire(participant_ID);
+CREATE INDEX telefollowup_participant_index ON telephonic_followup(participant_ID);
+
+CREATE TABLE `blood_results` (
+    `record_id`	        INTEGER PRIMARY KEY AUTOINCREMENT,
+    `participant_ID`	INTEGER references participant(id),
+    `measles_ELISA_factor` INTEGER,
+    `measles_titre      NUMERIC,
+);
+
+CREATE INDEX blood_results_participant_index ON blood_results(participant_ID);
+
+CREATE TABLE `participant_flow_checklist` (
+    `record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+    `participant_ID` INTEGER references participant(id),
+    `enroll_date` TEXT,
+    `details_collected` INTEGER,
+    `questionnaire` INTEGER,
+    `completion_date` TEXT,
+    `sun_prot_prov` INTEGER,
+    `sun_diary_prov` INTEGER,
+    `vaccination_date` TEXT,
+    `vaccine_brand` INTEGER,
+    `admin_route` INTEGER,
+    `contact_3week_date` TEXT,
+    `followup_4week_date` TEXT,
+    `sun_diary_ret` INTEGER,
+    `not_ret_reason` TEXT,
+    `money_recvd` INTEGER,
+    `toy_recvd` INTEGER,
+    `blood_taken_date` TEXT,
+    `sample_refrig` TEXT,
+    `delivered_lab` TEXT,
+    `followup_2month_date` TEXT,
+    `blood_results_given` INTEGER
+);
+
+CREATE INDEX flow_checklist_participant_index ON participant_flow_checklist(participant_ID);
 
 CREATE TABLE `observations` (
     `record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -5,7 +5,7 @@ import const
 import sqlite3
 from flask_wtf import Form
 from flask import Flask, request, g, redirect, url_for, render_template, flash
-from wtforms import StringField, IntegerField, DateField, TextAreaField, DecimalField, SelectField
+from wtforms import StringField, IntegerField, DateField, TextAreaField, DecimalField, SelectField, validators
 from wtforms.validators import ValidationError
 
 app = Flask(__name__)
@@ -26,7 +26,15 @@ times = ["Before 10am", "10am-2pm", "After 2pm"]
 check_headings = ["Inside", "Car/Bus/etc", "Sun", "Shade", "Hat", "Sunscreen", "Sunglasses", "Dress", "Short Sleeve",
                   "Long Sleeve", "Shorts", "Pants", "Costume"]
 
-pages = ["sun_diary", "road_to_health", "enrolment_checklist", "questionnaire", "observations", "telephonic_followup"]
+pages = ["sun_diary",
+         "road_to_health",
+         "enrolment_checklist",
+         "questionnaire",
+         "observations",
+         "telephonic_followup",
+         "participant_flow_checklist",
+         "blood_results"]
+
 #  href, id, caption
 navigation_bar = [("", "index", "Home"),
                   ("participants", "participant", "Participants"),
@@ -35,13 +43,17 @@ navigation_bar = [("", "index", "Home"),
                   ("enrolment_checklist", "enrolment_checklist", "Enrolment Checklist"),
                   ("questionnaire", "questionnaire", "Questionnaire"),
                   ("observations", "observations", "Observations"),
-                  ("telephonic_followup", "telephonic_followup", "Telephonic Followup")]
+                  ("telephonic_followup", "telephonic_followup", "Telephonic Followup"),
+                  ("participant_flow_checklist", "participant_flow_checklist", "Flow Checklist"),
+                  ("blood_results", "blood_results", "Blood Results")]
 
 participant_tables = [("sun_diary", "sun_diary", "Sun Diary"),
                       ("road_to_health", "road_to_health", "Road to Health"),
                       ("enrolment_checklist", "enrolment_checklist", "Enrolment Checklist"),
                       ("questionnaire", "questionnaire", "Questionnaire"),
-                      ("telephonic_followup", "telephonic_followup", "Telephonic Followup")]
+                      ("telephonic_followup", "telephonic_followup", "Telephonic Followup"),
+                      ("participant_flow_checklist", "participant_flow_checklist", "Flow Checklist"),
+                      ("blood_results", "blood_results", "Blood Results")]
 
 
 class LegalValues(object):
@@ -156,6 +168,8 @@ def add_entry():
     #    wore_sunscreen, wore_sunglasses, wore_dress, wore_shortsleeves, wore_longsleeves, wore_shorts,
     #    wore_pants, wore_costume
 
+    # raise ValueError("add entry")
+
     db = get_db()
     for day in range(1, 8):
         for time in times:
@@ -193,18 +207,22 @@ def participants():
                  "road_to_health": 1,
                  "enrolment_checklist": 2,
                  "questionnaire": 3,
-                 "telephonic_followup": 4}
+                 "telephonic_followup": 4,
+                 "participant_flow_checklist": 5,
+                 "blood_results": 6}
 
     columns = ["Sun Diary",
                "Road to Health",
                "Enrolment Checklist",
                "Questionnaire",
-               "Telephonic Followup"]
+               "Telephonic Followup",
+               "Flow Checklist",
+               "Blood Results"]
 
     for key, value in id_list.iteritems():
         for participant_id in id_list[key]:
             if participant_id[0] not in response_data:
-                response_data[participant_id[0]] = [0, 0, 0, 0, 0]
+                response_data[participant_id[0]] = [0, 0, 0, 0, 0, 0, 0]
 
             cur_resp = response_data[participant_id[0]]
             cur_resp[table_map[key]] = 1
@@ -446,6 +464,50 @@ def telephonic_followup():
     return generate_page(fields, "telephonic_followup", "telephonic_followup", "Telephonic Followup")
 
 
+@app.route('/' + pages[6], methods=['GET', 'POST'])
+def participant_flow_checklist():
+    allowed = [(777, "777 - Default Value "), (888, "888 - Not Applicable "), (999, "999 - Missing ")]
+    yes_no = [(1, "1 - Yes"), (2, "2 - No")] + allowed
+
+    fields = [('Participant ID', 'participant_ID', 'INTEGER', 'UNIQUE'),
+              ('Enrollment date', 'enroll_date', 'DATE', '%d%b%Y'),
+              ('Contact details collected', 'details_collected', 'SELECT', yes_no),
+              ('Questionnaire', 'questionnaire', 'SELECT', yes_no),
+              ('Completion date', 'completion_date', 'DATE', '%d%b%Y'),
+              ('Sun protection equipment provided', 'sun_prot_prov', 'SELECT', yes_no),
+              ('Sun diary provided', 'sun_diary_prov', 'SELECT', yes_no),
+              ('Vaccination date', 'vaccination_date', 'DATE', '%d%b%Y'),
+              ('Measles vaccine brand', 'vaccine_brand', 'SELECT', [(1, "1 - Sanofi"),
+                                                                    (2, "2 - MeasBio")] + allowed),
+              ('Administration route', 'admin_route', 'SELECT', [(1, "1 - Subcutaneous"),
+                                                                 (2, "2 - Intramuscular")] + allowed),
+              ('3 week contact date', 'contact_3week_date', 'DATE', '%d%b%Y'),
+              ('4 week follow up date', 'followup_4week_date', 'DATE', '%d%b%Y'),
+              ('Sun diary returned', 'sun_diary_ret', 'SELECT', yes_no),
+              ('reason not returned', 'not_ret_reason', 'STRING', yes_no),
+              ('Received travel money', 'money_recvd', 'SELECT', yes_no),
+              ('Received toy', 'toy_recvd', 'SELECT', yes_no),
+              ('Blood sample taken date', 'blood_taken_date', 'DATE', '%d%b%Y'),
+              ('Sample refrigerated (how quickly)', 'sample_refrig', 'STRING', yes_no),
+              ('Delivered to lab date', 'delivered_lab', 'DATE', '%d%b%Y'),
+              ('2 month follow up Completed date', 'followup_2month_date', 'DATE', '%d%b%Y'),
+              ('Blood results given', 'blood_results_given', 'SELECT', yes_no)]
+
+    return generate_page(fields, "participant_flow_checklist", "participant_flow_checklist", "Flow Checklist")
+
+
+@app.route('/' + pages[7], methods=['GET', 'POST'])
+def blood_results():
+    allowed = [(777, "777 - Default Value "), (888, "888 - Not Applicable "), (999, "999 - Missing ")]
+
+    fields = [('Participant ID', 'participant_ID', 'INTEGER', 'UNIQUE'),
+              ('ELISA Factor', 'measles_ELISA_factor', 'SELECT', [(1, "1 - Positive"),
+                                                                  (2, "2 - Negative")] + allowed),
+              ('Titre (mIU/ml)', 'measles_titre', 'NUMERIC', 3)]
+
+    return generate_page(fields, "blood_results", "blood_results", "Blood Results")
+
+
 def generate_page(fields, page_name, add_method, title):
     field_names = []
     flag_fields = []
@@ -471,7 +533,8 @@ def generate_page(fields, page_name, add_method, title):
         elif field[const.VARIABLE_TYPE] == 'DATE':
             BaseForm.append_field(
                 field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
-                DateField(field[const.DISPLAY_NAME], format=field[const.ALLOWED_VALUES]))
+                DateField(field[const.DISPLAY_NAME], format=field[const.ALLOWED_VALUES],
+                          validators=(validators.Optional(),)))
         elif field[const.VARIABLE_TYPE] == 'TEXT':
             BaseForm.append_field(
                 field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],

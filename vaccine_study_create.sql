@@ -1,11 +1,14 @@
 CREATE TABLE `participant` (
-    `id`	INTEGER UNIQUE,
-    PRIMARY KEY(id)
+	`record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`participant_ID`	INTEGER UNIQUE,
+	`name`	TEXT,
+	`contact_number`	TEXT,
+	`contact_number_alt`	TEXT
 );
 
 CREATE TABLE `enrolment_checklist` (
     `record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-    `participant_ID`	INTEGER references participant(id),
+    `participant_ID`	INTEGER references participant(participant_ID),
     `to_receive_second_vax`	INTEGER DEFAULT 0,
     `received_first_vax`	INTEGER DEFAULT 0,
     `mother_can_consent`	INTEGER DEFAULT 0,
@@ -21,7 +24,7 @@ CREATE INDEX enrolment_participant_index ON enrolment_checklist(participant_ID);
 
 CREATE TABLE `road_to_health` (
     `record_id` INTEGER PRIMARY KEY AUTOINCREMENT,
-    `participant_ID`	INTEGER references participant(id),
+    `participant_ID`	INTEGER references participant(participant_ID),
     `dob`  TEXT,
     `bweight` NUMERIC,
     `blength` NUMERIC,
@@ -42,7 +45,7 @@ CREATE INDEX rth_participant_index ON road_to_health(participant_ID);
 
 CREATE TABLE `sun_diary` (
     `record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-    `participant_ID`	INTEGER references participant(id),
+    `participant_ID`	INTEGER references participant(participant_ID),
     `time`	TEXT,
     `date`	TEXT,
     `in_building`	INTEGER DEFAULT '0',
@@ -64,7 +67,7 @@ CREATE INDEX sun_diary_participant_index ON sun_diary(participant_ID);
 
 CREATE TABLE `questionnaire` (
     `record_id`         INTEGER PRIMARY KEY AUTOINCREMENT,
-    `participant_ID`	INTEGER references participant(id),
+    `participant_ID`	INTEGER references participant(participant_ID),
     `q01`               INTEGER,  -- 3
     `q02`               INTEGER,  -- 5
     `q02Other`          TEXT,     
@@ -135,7 +138,7 @@ CREATE INDEX questionnaire_participant_index ON questionnaire(participant_ID);
 
 CREATE TABLE `telephonic_followup` (
     `record_id`	        INTEGER PRIMARY KEY AUTOINCREMENT,
-    `participant_ID`	INTEGER references participant(id),
+    `participant_ID`	INTEGER references participant(participant_ID),
     `q1likedprotection`	INTEGER,
     `q1ci`	            INTEGER,
     `q1cii`	            INTEGER,
@@ -155,7 +158,7 @@ CREATE INDEX telefollowup_participant_index ON telephonic_followup(participant_I
 
 CREATE TABLE `blood_results` (
     `record_id`	        INTEGER PRIMARY KEY AUTOINCREMENT,
-    `participant_ID`	INTEGER references participant(id),
+    `participant_ID`	INTEGER references participant(participant_ID),
     `measles_ELISA_factor` INTEGER,
     `measles_titre      NUMERIC,
 );
@@ -164,7 +167,7 @@ CREATE INDEX blood_results_participant_index ON blood_results(participant_ID);
 
 CREATE TABLE `participant_flow_checklist` (
     `record_id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-    `participant_ID` INTEGER references participant(id),
+    `participant_ID` INTEGER references participant(participant_ID),
     `enroll_date` TEXT,
     `details_collected` INTEGER,
     `questionnaire` INTEGER,

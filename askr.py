@@ -36,8 +36,8 @@ pages = ["sun_diary",
          "blood_results"]
 
 #  href, id, caption
-navigation_bar = [("", "index", "Home"),
-                  ("participants", "participant", "Participants"),
+navigation_bar = [("/", "", "Home"),
+                  ("participant", "participant", "Participants"),
                   ("sun_diary", "sun_diary", "Sun Diary"),
                   ("road_to_health", "road_to_health", "Road to Health"),
                   ("enrolment_checklist", "enrolment_checklist", "Enrolment Checklist"),
@@ -47,7 +47,8 @@ navigation_bar = [("", "index", "Home"),
                   ("participant_flow_checklist", "participant_flow_checklist", "Flow Checklist"),
                   ("blood_results", "blood_results", "Blood Results")]
 
-participant_tables = [("sun_diary", "sun_diary", "Sun Diary"),
+participant_tables = [("participant", "participant", "Participant Information"),
+                      ("sun_diary", "sun_diary", "Sun Diary"),
                       ("road_to_health", "road_to_health", "Road to Health"),
                       ("enrolment_checklist", "enrolment_checklist", "Enrolment Checklist"),
                       ("questionnaire", "questionnaire", "Questionnaire"),
@@ -145,7 +146,45 @@ def close_db(error):
 
 @app.route('/')
 def askr_main():
-    return render_template('default.html', title="Vaccine Study", navigation_bar=navigation_bar)
+    db = get_db()
+
+    id_list = {}
+
+    for href, table_name, title in participant_tables:
+        id_list[table_name] = db.cursor().execute("select participant_ID from " + table_name).fetchall()
+        print table_name, id_list[table_name]
+
+    response_data = {}
+
+    table_map = {"sun_diary": 0,
+                 "road_to_health": 1,
+                 "enrolment_checklist": 2,
+                 "questionnaire": 3,
+                 "telephonic_followup": 4,
+                 "participant_flow_checklist": 5,
+                 "blood_results": 6,
+                 "participant": 7}
+
+    columns = ["Sun Diary",
+               "Road to Health",
+               "Enrolment Checklist",
+               "Questionnaire",
+               "Telephonic Followup",
+               "Flow Checklist",
+               "Blood Results",
+               "Participant Information"]
+
+    for key, value in id_list.iteritems():
+        for participant_id in id_list[key]:
+            if participant_id[0] not in response_data:
+                response_data[participant_id[0]] = [0, 0, 0, 0, 0, 0, 0, 0]
+
+            cur_resp = response_data[participant_id[0]]
+            cur_resp[table_map[key]] = 1
+            response_data[participant_id[0]] = cur_resp
+
+    return render_template('display.html', title=navigation_bar[0][2], navigation_bar=navigation_bar,
+                           page_name=navigation_bar[0][1], response_data=response_data, cols=columns)
 
 
 @app.route('/' + pages[0])
@@ -191,45 +230,14 @@ def add_entry():
     return redirect(url_for('sun_diary'))
 
 
-@app.route('/' + navigation_bar[1][0])
-def participants():
-    db = get_db()
+@app.route('/' + navigation_bar[1][0], methods=['GET', 'POST'])
+def participant():
+    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
+              ('Name', 'name', 'STRING', ''),
+              ('Contact Number', 'contact_number', 'STRING', ''),
+              ('Alternative Contact Number', 'contact_number_alt', 'STRING', '')]
 
-    id_list = {}
-
-    for href, table_name, title in participant_tables:
-        id_list[table_name] = db.cursor().execute("select participant_ID from " + table_name).fetchall()
-        print table_name, id_list[table_name]
-
-    response_data = {}
-
-    table_map = {"sun_diary": 0,
-                 "road_to_health": 1,
-                 "enrolment_checklist": 2,
-                 "questionnaire": 3,
-                 "telephonic_followup": 4,
-                 "participant_flow_checklist": 5,
-                 "blood_results": 6}
-
-    columns = ["Sun Diary",
-               "Road to Health",
-               "Enrolment Checklist",
-               "Questionnaire",
-               "Telephonic Followup",
-               "Flow Checklist",
-               "Blood Results"]
-
-    for key, value in id_list.iteritems():
-        for participant_id in id_list[key]:
-            if participant_id[0] not in response_data:
-                response_data[participant_id[0]] = [0, 0, 0, 0, 0, 0, 0]
-
-            cur_resp = response_data[participant_id[0]]
-            cur_resp[table_map[key]] = 1
-            response_data[participant_id[0]] = cur_resp
-
-    return render_template('participants.html', title=navigation_bar[1][2], navigation_bar=navigation_bar,
-                           page_name=navigation_bar[1][1], response_data=response_data, cols=columns)
+    return generate_page(fields, "participant", "participant", "Participant")
 
 
 @app.route('/' + pages[1], methods=['GET', 'POST'])
@@ -239,7 +247,7 @@ def road_to_health():
         (0, "0 - Yes"), (1, "1 - No"), (777, "777 - Default Value "), (888, "888 - Not Applicable "),
         (999, "999 - Missing "))
 
-    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
+    fields = [('Participant ID', 'participant_ID', 'INTEGER', 'UNIQUE'),
               ('Date of birth', 'dob', 'DATE', '%d%b%Y'),
               ('Birth weight (kg)', 'bweight', 'NUMERIC', 3),
               ('Birth length (cm)', 'blength', 'NUMERIC', 3),
@@ -264,7 +272,7 @@ def enrolment_checklist():
         (0, "0 - Yes"), (1, "1 - No"), (777, "777 - Default Value "), (888, "888 - Not Applicable "),
         (999, "999 - Missing "))
 
-    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
+    fields = [('Participant ID', 'participant_ID', 'INTEGER', 'UNIQUE'),
               # 1. Child is here to receive second measles vaccine?
               ('Here for second measles vaccine', 'to_receive_second_vax', 'SELECT', std_yes_no),
               # 2. Child received first measles vaccine?
@@ -286,8 +294,6 @@ def enrolment_checklist():
 
 @app.route('/' + pages[3], methods=['GET', 'POST'])
 def questionnaire():
-    allowed_ints = [777, 888, 999]
-
     allowed = [(777, "777 - Default Value "), (888, "888 - Not Applicable "), (999, "999 - Missing ")]
 
     yes_no = [(1, "1 - No"), (2, "2 - Yes")] + allowed
@@ -296,7 +302,7 @@ def questionnaire():
 
     yes_no_dont_know = [(1, "1 - No"), (2, "2 - Yes"), (3, "3 - Don't know")] + allowed
 
-    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
+    fields = [('Participant ID', 'participant_ID', 'INTEGER', 'UNIQUE'),
               ('1. Relation to child', 'q01', 'SELECT', [(1, "1 - Mother"),
                                                          (2, "2 - Guardian"),
                                                          (3, "3 - Family Relation")] + allowed),
@@ -446,7 +452,7 @@ def telephonic_followup():
     allowed = [(777, "777 - Default Value "), (888, "888 - Not Applicable "), (999, "999 - Missing ")]
     yes_no = [(1, "1 - Yes"), (2, "2 - No")] + allowed
 
-    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
+    fields = [('Participant ID', 'participant_ID', 'INTEGER', 'UNIQUE'),
               ('1. Liked using sun protection', 'q1likedprotection', 'SELECT', yes_no),
               ('1ci. Didn\'t like: feeling of sunscreen', 'q1ci', 'SELECT', yes_no),
               ('1cii. Didn\'t like: sunscreen would hurt', 'q1cii', 'SELECT', yes_no),
@@ -593,9 +599,9 @@ def generate_page(fields, page_name, add_method, title):
 
     for flag_field in flag_fields:
         if not request.form[flag_field] == '':
-            db.execute("insert into flagged_records (participant_id, variable_name, table_name, flag_text) values (" +
+            db.execute("insert into flagged_records (participant_ID, variable_name, table_name, flag_text) values (" +
                        "?, ?, ?, ? )",
-                       [request.form["participant_id"], flag_field[5:], add_method, request.form[flag_field]])
+                       [request.form["participant_ID"], flag_field[5:], add_method, request.form[flag_field]])
 
     db.commit()
 

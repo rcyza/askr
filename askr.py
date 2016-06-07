@@ -579,6 +579,7 @@ def generate_page(fields, page_name, add_method, title):
         print "did not validate"
 
         print rth_form.errors
+        print rth_form
 
         # for field_name in field_names:
         #     if rth_form[field_name].errors:

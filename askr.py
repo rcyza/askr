@@ -99,6 +99,11 @@ class BaseForm(Form):
         setattr(cls, name, field)
         return cls
 
+    @classmethod
+    def remove_field(cls, name):
+        delattr(cls, name)
+        return cls
+
 
 def connect_db():
     """Connects to the specific database."""
@@ -571,6 +576,10 @@ def generate_page(fields, page_name, add_method, title):
 
     rth_form = BaseForm(request.form)
 
+    for field in rth_form.data:
+        if field not in field_names:
+            BaseForm.remove_field(field)
+
     # if request.method == 'POST':
     #     print "in POST"
     #     if rth_form.validate():
@@ -580,6 +589,8 @@ def generate_page(fields, page_name, add_method, title):
 
         print rth_form.errors
         print rth_form.data
+
+      #  raise ValueError("Build us a shrubbery")
 
         # for field_name in field_names:
         #     if rth_form[field_name].errors:

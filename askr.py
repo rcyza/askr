@@ -3,7 +3,10 @@
 import os
 import const
 import sqlite3
+import io
+import csv
 from flask_wtf import Form
+from flask_wtf.file import FileField
 from flask import Flask, request, g, redirect, url_for, render_template, flash
 from wtforms import StringField, IntegerField, DateField, TextAreaField, DecimalField, SelectField, validators
 from wtforms.validators import ValidationError
@@ -33,7 +36,8 @@ pages = ["sun_diary",
          "observations",
          "telephonic_followup",
          "participant_flow_checklist",
-         "blood_results"]
+         "blood_results",
+         "weather_data"]
 
 #  href, id, caption
 navigation_bar = [("/", "", "Home"),
@@ -45,7 +49,8 @@ navigation_bar = [("/", "", "Home"),
                   ("observations", "observations", "Observations"),
                   ("telephonic_followup", "telephonic_followup", "Telephonic Followup"),
                   ("participant_flow_checklist", "participant_flow_checklist", "Flow Checklist"),
-                  ("blood_results", "blood_results", "Blood Results")]
+                  ("blood_results", "blood_results", "Blood Results"),
+                  ("weather_data", "weather_data", "Weather Data")]
 
 participant_tables = [("participant", "participant", "Participant Information"),
                       ("sun_diary", "sun_diary", "Sun Diary"),
@@ -252,7 +257,7 @@ def road_to_health():
         (0, "0 - Yes"), (1, "1 - No"), (777, "777 - Default Value "), (888, "888 - Not Applicable "),
         (999, "999 - Missing "))
 
-    fields = [('Participant ID', 'participant_ID', 'INTEGER', 'UNIQUE'),
+    fields = [('Participant ID', 'participant_id', 'INTEGER', 'UNIQUE'),
               ('Date of birth', 'dob', 'DATE', '%d%b%Y'),
               ('Birth weight (kg)', 'bweight', 'NUMERIC', 3),
               ('Birth length (cm)', 'blength', 'NUMERIC', 3),
@@ -519,6 +524,51 @@ def blood_results():
     return generate_page(fields, "blood_results", "blood_results", "Blood Results")
 
 
+@app.route('/' + pages[8], methods=['GET'])
+def weather_data():
+
+    fields = [('Data upload', 'data_upload', 'DATAFILE', 'TABDEL'),
+              ('Clinic', 'clinic_id', 'SELECT', [(1, "1 - Intervention"),
+                                                 (2, "2 - Control")])]
+
+    return generate_page(fields, "weather_data", "weather_data", "Weather Data")
+
+
+@app.route('/' + pages[8], methods=['POST'])
+def upload_data():
+
+    f = request.files['data_upload']
+    clinic_id = request.form['clinic_id']
+
+    if not f:
+        return "No file"
+
+    stream = io.StringIO(f.stream.read().decode("UTF8"), newline=None)
+    csv_input = csv.reader(stream, delimiter='\t')
+
+    next(csv_input, None)
+    next(csv_input, None)
+
+    db = get_db()
+
+    for row in csv_input:
+        row.insert(0, clinic_id)
+
+        print row
+        db.execute("insert into weather_data (clinic_id, time, date, temp_out, hi_temp, low_temp, out_humidity, "
+                   "dewpoint, wind_speed, wind_direction, wind_run, hi_speed, hi_direction, wind_chill, heat_index, "
+                   "thw_index, bar, Rain, rain_rate, heat_DD, cool_DD, in_temp, in_humidity, in_dew, in_heat, in_EMC, "
+                   "in_air_density, wind_sample, wind_TX, iss_reception, arc_int) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
+                   " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                   row)
+
+    db.commit()
+
+    flash('Weather data was successfully uploaded')
+
+    return redirect(url_for('weather_data'))
+
+
 def generate_page(fields, page_name, add_method, title):
     field_names = []
     flag_fields = []
@@ -558,6 +608,10 @@ def generate_page(fields, page_name, add_method, title):
             BaseForm.append_field(
                 field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
                 DecimalField(field[const.DISPLAY_NAME], places=field[const.ALLOWED_VALUES]))
+        elif field[const.VARIABLE_TYPE] == 'DATAFILE':
+            BaseForm.append_field(
+                field[const.DISPLAY_NAME] if field[const.VARIABLE_NAME] == '' else field[const.VARIABLE_NAME],
+                FileField())
 
         flag_name = "flag_" + field[const.VARIABLE_NAME]
 

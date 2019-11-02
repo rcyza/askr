@@ -160,7 +160,7 @@ CREATE TABLE `blood_results` (
     `record_id`	        INTEGER PRIMARY KEY AUTOINCREMENT,
     `participant_ID`	INTEGER references participant(participant_ID),
     `measles_ELISA_factor` INTEGER,
-    `measles_titre      NUMERIC,
+    `measles_titre`      NUMERIC
 );
 
 CREATE INDEX blood_results_participant_index ON blood_results(participant_ID);
@@ -214,5 +214,40 @@ CREATE TABLE `flagged_records` (
     `variable_name` TEXT,
     `table_name` TEXT,
     `flag_text` TEXT
+);
+
+CREATE TABLE `weather_data` (
+    `record_id`	   INTEGER PRIMARY KEY AUTOINCREMENT,
+    `clinic_id`	   INTEGER,
+    `time`	   TEXT,
+    `date`	   TEXT,
+    `temp_out`       NUMERIC,
+    `hi_temp`        NUMERIC,
+    `low_temp`       NUMERIC,
+    `out_humidity`   NUMERIC,
+    `dewpoint`       NUMERIC,
+    `wind_speed`     NUMERIC,
+    `wind_direction` NUMERIC,
+    `wind_run` 	   NUMERIC,
+    `hi_speed` 	   NUMERIC,
+    `hi_direction`   NUMERIC,
+    `wind_chill`     NUMERIC,
+    `heat_index`     NUMERIC,
+    `thw_index`      NUMERIC,
+    `bar`            NUMERIC,
+    `Rain`           NUMERIC,
+    `rain_rate`      NUMERIC,
+    `heat_DD`        NUMERIC,
+    `cool_DD`        NUMERIC,
+    `in_temp`        NUMERIC,
+    `in_humidity`    NUMERIC,
+    `in_dew`         NUMERIC,
+    `in_heat`        NUMERIC,
+    `in_EMC`         NUMERIC,
+    `in_air_density` NUMERIC,
+    `wind_sample`    NUMERIC,
+    `wind_TX`        NUMERIC,
+    `iss_reception`  NUMERIC,
+    `arc_int`        NUMERIC
 );
 

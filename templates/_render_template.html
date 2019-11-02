@@ -2,13 +2,13 @@
 {% set active_page = page_name %}
 {% block body %}
 {% from "_formhelpers.html" import render_field %}
-<form action="{{ url_for( add_method ) }}" method="post" class="add-entry">
+<form action="{{ url_for( add_method ) }}" method="post" class="add-entry" enctype="multipart/form-data">
   {{ form.csrf_token }}
   <dl class="inline">
 {%     for field_name in fields %}
 {{         render_field(form[field_name[0]], form[field_name[1]], autocomplete="off")  }}
 {%     endfor %}
   </dl>
-  <p><input type=submit value=Save>
+  <p><input type="submit" value="Save">
 </form>
 {% endblock %}
